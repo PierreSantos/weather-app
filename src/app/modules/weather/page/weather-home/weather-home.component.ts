@@ -24,7 +24,6 @@ export class WeatherHomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getCurrentLocation();
-    this.getGeolocalization(this.lat, this.lon);
   }
 
   getCurrentLocation() {
@@ -32,6 +31,7 @@ export class WeatherHomeComponent implements OnInit, OnDestroy {
      navigator.geolocation.getCurrentPosition(position => {
       this.lat = position.coords.latitude;
       this.lon = position.coords.longitude;
+      this.getGeolocalization(this.lat, this.lon);
      });
     }
    else {
@@ -46,6 +46,7 @@ export class WeatherHomeComponent implements OnInit, OnDestroy {
       next: (response) => {
         response && (this.weatherDatas = response);
         console.log(this.weatherDatas)
+        this.cityName = this.weatherDatas.name;
       },
       error: (error) => console.log(error),
     })
