@@ -12,7 +12,10 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 export class WeatherHomeComponent implements OnInit, OnDestroy {
 
   private readonly destroy$: Subject<void> = new Subject();
-  initialCityName = 'São Paulo';
+
+  lat: number = 0;
+  lon: number = 0;
+  cityName = '';
   weatherDatas!: WeatherDatas;
   searchIcon = faMagnifyingGlass;
 
@@ -20,7 +23,32 @@ export class WeatherHomeComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.getWeatherDatas(this.initialCityName);
+    this.getCurrentLocation();
+    this.getGeolocalization(this.lat, this.lon);
+  }
+
+  getCurrentLocation() {
+    if (navigator.geolocation) {
+     navigator.geolocation.getCurrentPosition(position => {
+      this.lat = position.coords.latitude;
+      this.lon = position.coords.longitude;
+     });
+    }
+   else {
+    alert("Geolocation is not supported by this browser.");
+    }
+   }
+
+   getGeolocalization(latitude: number, Longitude: number): void {
+    this.weatherService.getGeolocalization(latitude, Longitude)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe ({
+      next: (response) => {
+        response && (this.weatherDatas = response);
+        console.log(this.weatherDatas)
+      },
+      error: (error) => console.log(error),
+    })
   }
 
   getWeatherDatas(cityName: string): void {
@@ -36,8 +64,8 @@ export class WeatherHomeComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    this.getWeatherDatas(this.initialCityName);
-    this.initialCityName = '';
+    this.getWeatherDatas(this.cityName);
+    this.cityName = '';
   }
 
   ngOnDestroy(): void {

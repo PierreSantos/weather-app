@@ -10,6 +10,10 @@ export class WeatherService {
 
   constructor(private http: HttpClient) { }
 
+  getGeolocalization(latitude: number, longitude: number): Observable<any> {
+    return this.http.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&mode=json&appid=${this.apiKey}`);
+  }
+
   getWeatherDatas(cityName: string): Observable<any> {
     return this.http.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&mode=json&appid=${this.apiKey}`,
     {})
